@@ -1,0 +1,7 @@
+{
+    "path": "assets/level1_path.json",
+    "static": {
+        "geometry": "assets/level1_geometry.json",
+        "texture": "assets/level1_texture.png"    
+    }
+}

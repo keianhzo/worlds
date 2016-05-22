@@ -1,0 +1,75 @@
+{
+"frames": {
+	"ui-main-background-01.png": {
+		"frame": {"x":0, "y":305, "w":641, "h":720},
+		"spriteSourceSize": {"x":0,"y":0,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-button-01": {
+		"frame": {"x":570, "y":1238, "w":520, "h":182},
+		"spriteSourceSize": {"x":380,"y":269,"w":1280,"h":720},
+		"sourceSize": {"w":1280,"h":720}
+	},
+	"ui-main-circleblue-01.png": {
+		"frame": {"x":834, "y":826, "w":120, "h":121},
+		"spriteSourceSize": {"x":260,"y":429,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-circlered-01.png": {
+		"frame": {"x":642, "y":826, "w":191, "h":92},
+		"spriteSourceSize": {"x":0,"y":434,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-header-01.png": {
+		"frame": {"x":0, "y":0, "w":641, "h":304},
+		"spriteSourceSize": {"x":0,"y":0,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-leteral-01.png": {
+		"frame": {"x":1091, "y":0, "w":418, "h":686},
+		"spriteSourceSize": {"x":14,"y":34,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-mecha-01.png": {
+		"frame": {"x":0, "y":1344, "w":538, "h":111},
+		"spriteSourceSize": {"x":133,"y":117,"w":1280,"h":720},
+		"sourceSize": {"w":1280,"h":720}
+	},
+	"ui-main-panel-01.png": {
+		"frame": {"x":642, "y":0, "w":448, "h":718},
+		"spriteSourceSize": {"x":191,"y":2,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-super-01.png": {
+		"frame": {"x":539, "y":1421, "w":365, "h":85},
+		"spriteSourceSize": {"x":230,"y":41,"w":641,"h":720},
+		"sourceSize": {"w":641,"h":720}
+	},
+	"ui-main-triad-01.png": {
+		"frame": {"x":571, "y":1026, "w":444, "h":127},
+		"spriteSourceSize": {"x":688,"y":117,"w":1280,"h":720},
+		"sourceSize": {"w":1280,"h":720}
+	},
+	"ui_score.png": {
+		"frame": {"x":0, "y":1026, "w":570, "h":211},
+		"spriteSourceSize": {"x":0,"y":0,"w":570,"h":211},
+		"sourceSize": {"w":570,"h":211}
+	},
+	"ui_score_bottom.png": {
+		"frame": {"x":642, "y":719, "w":333, "h":106},
+		"spriteSourceSize": {"x":0,"y":0,"w":333,"h":106},
+		"sourceSize": {"w":333,"h":106}
+	},
+	"ui_score_top.png": {
+		"frame": {"x":0, "y":1238, "w":569, "h":105},
+		"spriteSourceSize": {"x":0,"y":0,"w":569,"h":105},
+		"sourceSize": {"w":569,"h":105}
+	}
+
+},
+"meta": {
+	"image": "sprites.png",
+	"size": {"w": 1510, "h": 1507},
+	"scale": "1"
+}
+}
