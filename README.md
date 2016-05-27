@@ -1,2 +1,4 @@
-# Worlds game demo
-Just a preview for the worlds game demo made with Phaser, Three and Blender.
+# Worlds game
+Worlds game progress. Made with Phaser, Three and Blender.
+
+[Worlds](https://keianhzo.github.com/worlds)

@@ -143,7 +143,7 @@ var Objects;
             this.get = function (index) {
                 return _this._vertices[index];
             };
-            this.getInmediateNext = function (direction, front) {
+            this.getInmediateNext = function () {
                 for (var i = 0; i < _this._edges.length; i++) {
                     if (_this._edges[i].vertices.a === _this._current) {
                         return _this._vertices[_this._edges[i].vertices.b];
@@ -151,7 +151,7 @@ var Objects;
                 }
                 return null;
             };
-            this.getNext = function (position, base) {
+            this.getNext = function (position, base, aperture) {
                 var next = null;
                 for (var i = 0; i < _this._edges.length; i++) {
                     if (Game.Globals.DEBUG) {
@@ -159,7 +159,6 @@ var Objects;
                         material.color.setHex(0xff0000);
                     }
                 }
-                var aperture = THREE.Math.degToRad(Path.APERTURE);
                 var apex = position.clone();
                 if (Game.Globals.DEBUG) {
                     console.log("Current: " + _this._current);
@@ -188,7 +187,7 @@ var Objects;
                     }
                     if (waypoint) {
                         var vertex = waypoint.position;
-                        if (_this.isLyingInCone(vertex, apex, base, aperture)) {
+                        if (_this.isLyingInCone(vertex, apex, base, THREE.Math.degToRad(aperture))) {
                             if (Game.Globals.DEBUG)
                                 console.log("Next: " + waypoint.index);
                             return waypoint;
@@ -269,7 +268,6 @@ var Objects;
                 this.add(this._debugCone);
             }
         }
-        Path.APERTURE = 120;
         Path.START = "start";
         Path.END = "end";
         return Path;
@@ -317,9 +315,30 @@ var Objects;
                 }
                 else {
                     _this._path.setCurrent(_this._nextWayPoint);
-                    var next = _this._path.getNext(_this.position, _this.getBase(_this._direction));
-                    if (!next)
-                        next = _this._path.getNext(_this.position, _this.getBase(Objects.Direction.FRONT));
+                    var aperture = Player.APERTURE;
+                    if (_this._direction !== Direction.FRONT)
+                        aperture = Player.APERTURE_WIDE;
+                    var next = _this._path.getNext(_this.position, _this.getBase(_this._direction), aperture);
+                    if (!next) {
+                        next = _this._path.getNext(_this.position, _this.getBase(Direction.FRONT), aperture);
+                        if (!next) {
+                            next = _this._path.getNext(_this.position, _this.getBase(Direction.RIGHT), aperture);
+                        }
+                        if (!next) {
+                            next = _this._path.getNext(_this.position, _this.getBase(Direction.LEFT), aperture);
+                        }
+                    }
+                    else {
+                        _this._direction = Direction.FRONT;
+                        _this.dispatchEvent({ type: "direction", direction: _this._direction });
+                    }
+                    if (Game.Globals.DEBUG) {
+                        console.log("Direction: " + DirectionToString(_this._direction));
+                    }
+                    if (!next) {
+                        console.error("Can find a next waypoint");
+                        return;
+                    }
                     _this._remainingLength = next.position.clone().sub(_this._path.getCurrent().position).length();
                     _this._startTime = new Date().getTime();
                     _this._startPosition = _this._nextWayPoint.position.clone();
@@ -335,6 +354,10 @@ var Objects;
             };
             this.setDirection = function (direction) {
                 _this._direction = direction;
+                _this.dispatchEvent({ type: "direction", direction: _this._direction });
+            };
+            this.getDirection = function () {
+                return _this._direction;
             };
             this.getBase = function (direction) {
                 var base = null;
@@ -349,8 +372,11 @@ var Objects;
                         base.cross(_this._frontVector);
                         return base;
                     case Objects.Direction.RIGHT:
+                        base = _this.position.clone().add(_this._frontVector).negate();
+                        base.cross(_this._frontVector.clone());
                         break;
                     case Objects.Direction.UP:
+                        base = _this.position.clone().add(_this._upVector);
                         break;
                     case Objects.Direction.DOWN:
                         break;
@@ -367,22 +393,15 @@ var Objects;
             this.add(this._mesh);
             var startWayPoint = this._path.getStart();
             this.position.set(startWayPoint.position.x, startWayPoint.position.y, startWayPoint.position.z);
-            this._previousWayPoint = this._path.getInmediateNext();
             this._nextWayPoint = this._path.getInmediateNext();
+            this._previousWayPoint = this._nextWayPoint;
+            ;
             this._remainingLength = this._nextWayPoint.position.clone().sub(this.position).length();
             this._startTime = new Date().getTime();
             this._startPosition = this.position.clone();
             this._frontVector = this.position.clone().sub(this._nextWayPoint.position).normalize();
             this._previousFrontVector = this._frontVector;
             this._upVector = this.position.clone().normalize();
-            this._hammer = new Hammer(renderer);
-            this._hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-            this._hammer.on("panleft panright panup tap press", function (ev) {
-                if (ev.direction === Hammer.DIRECTION_LEFT)
-                    _this._direction = Direction.LEFT;
-                else if (ev.direction === Hammer.DIRECTION_UP)
-                    _this._direction = Direction.FRONT;
-            });
             if (Game.Globals.DEBUG) {
                 var frontGeometry = new THREE.Geometry();
                 frontGeometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0));
@@ -412,23 +431,25 @@ var Objects;
                 this._frontCone.geometry.applyMatrix(new THREE.Matrix4().makeRotationFromQuaternion(quaternion));
             }
         }
+        Player.APERTURE_WIDE = 140;
+        Player.APERTURE = 90;
         return Player;
     }(THREE.Object3D));
     Objects.Player = Player;
     function DirectionToString(direction) {
         switch (direction) {
             case Direction.FRONT:
-                return "front";
+                return "FRONT";
             case Direction.BACK:
-                return "back";
+                return "BACK";
             case Direction.LEFT:
-                return "left";
+                return "LEFT";
             case Direction.RIGHT:
-                return "right";
+                return "RIGHT";
             case Direction.UP:
-                return "up";
+                return "UP";
             case Direction.DOWN:
-                return "down";
+                return "DOWN";
         }
     }
     Objects.DirectionToString = DirectionToString;
@@ -461,7 +482,7 @@ var Scenes;
             this._three.domElement.style.backgroundColor = "#000000";
             this._three.setPixelRatio(window.devicePixelRatio);
             this._three.setSize(1280, 720);
-            this._three.setClearColor(0xcccccc, 1);
+            this._three.setClearColor(0xB2E5D4, 1);
             document.body.insertBefore(this._three.domElement, this.game.canvas);
             window.addEventListener('resize', this.onWindowResize.bind(this), false);
             this.onWindowResize(null);
@@ -470,8 +491,11 @@ var Scenes;
             _super.prototype.preload.call(this);
         };
         GameScene.prototype.create = function () {
+            var _this = this;
             _super.prototype.create.call(this);
             var cache = this.cache;
+            var text = this.game.add.text(this.game.width / 2, 50, "FRONT", { fill: "0x545142" });
+            text.anchor = new Phaser.Point(0.5, 0.5);
             this._world = new THREE.Mesh(cache.getThreeGeometry("level_geometry"), new THREE.MeshBasicMaterial({
                 map: cache.getThreeTexture("level_texture"),
                 side: THREE.FrontSide,
@@ -485,12 +509,28 @@ var Scenes;
             this._path = new Objects.Path(pathJson);
             this._threeScene.add(this._path);
             this._player = new Objects.Player(this.game.canvas, this._path);
+            this._player.addEventListener("direction", function (event) {
+                text.setText(Objects.DirectionToString(event['direction']));
+            });
             this._threeScene.add(this._player);
             this._orbitCamera = new Objects.OrbitCamera();
             this._threeScene.add(this._orbitCamera);
             this._playerCamera = new Objects.PlayerCamera(this._player);
             this._camera = this._playerCamera;
             this._threeScene.add(new THREE.HemisphereLight(0x404040));
+            this._hammer = new Hammer(this.game.canvas);
+            this._hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+            this._hammer.on("panleft panright panup tap press", function (ev) {
+                if (ev.direction === Hammer.DIRECTION_UP) {
+                    _this._player.setDirection(Objects.Direction.UP);
+                }
+                else if (ev.direction === Hammer.DIRECTION_LEFT) {
+                    _this._player.setDirection(Objects.Direction.LEFT);
+                }
+                else if (ev.direction === Hammer.DIRECTION_RIGHT) {
+                    _this._player.setDirection(Objects.Direction.RIGHT);
+                }
+            });
             this.animateLoop();
             this.renderLoop();
         };
